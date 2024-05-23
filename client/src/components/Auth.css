@@ -1,0 +1,92 @@
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #d8fdc8;
+}
+
+.auth-box {
+    padding: 30px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+}
+
+.auth-box h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.auth-box form {
+    margin-bottom: 10px;
+}
+
+.auth-box .form-group {
+    margin-bottom: 15px;
+}
+
+.auth-box .form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.auth-box .form-group input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.auth-box button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #037807;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.auth-box button:hover {
+    background-color: #093a01;
+}
+
+.social-login {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.social-button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #000000; /* Google blue */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.social-button.google {
+    background-color: #eb3b3b; /* Google red */
+}
+
+.social-button.google:hover {
+    background-color: #a40606; /* Google red */
+}
+
+.social-button.facebook {
+    background-color: #3c5a9c; /* Facebook blue */
+}
+
+.social-button.facebook:hover {
+    background-color: #092666; /* Google red */
+}
+
+.social-button:hover {
+    opacity: 0.9;
+}

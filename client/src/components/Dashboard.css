@@ -1,0 +1,61 @@
+/* Add this to your CSS file */
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.dashboard-container {
+    padding: 20px;
+    position: relative;
+}
+
+.welcome-message {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.logout-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.dashboard-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    width: 90%;
+    margin-left: 5%;
+    margin-top: 50px;
+}
+
+.chart {
+    flex: 1;
+    margin: 0 10px;
+}
+
+.table-container {
+    width: 90%;
+    margin-left: 5%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.table-container h4 {
+    margin-bottom: 10px;
+}
+
+.table-container .table {
+    align-items: center;
+    text-align: center;
+}

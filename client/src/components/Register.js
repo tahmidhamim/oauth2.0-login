@@ -16,7 +16,7 @@ const Register = () => {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const response = await axios.get(`${backendUrl}/auth/isAuthenticated`, {
+                const response = await axios.get(`${backendUrl}/api/auth/isAuthenticated`, {
                     withCredentials: true
                 });
                 if (response.data.isAuthenticated) {
@@ -33,7 +33,7 @@ const Register = () => {
     const onSubmit = async e => {
         e.preventDefault();
         try {
-            await axios.post(`${backendUrl}/auth/register`, { name, email, password }, { withCredentials: true });
+            await axios.post(`${backendUrl}/api/auth/register`, { name, email, password }, { withCredentials: true });
             toast.success('Registration successful! Redirecting to login...');
             setTimeout(() => {
                 navigate('/login');

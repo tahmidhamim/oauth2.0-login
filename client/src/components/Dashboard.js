@@ -20,7 +20,7 @@ const Dashboard = () => {
         // Fetch login history
         const fetchLoginHistory = async () => {
             try {
-                const response = await axios.get(`${backendUrl}/auth/login-history`, {
+                const response = await axios.get(`${backendUrl}/api/auth/login-history`, {
                     withCredentials: true
                 });
                 const data = response.data;
@@ -39,7 +39,7 @@ const Dashboard = () => {
 
     const logout = async () => {
         try {
-            await axios.post(`${backendUrl}/auth/logout`, {}, { withCredentials: true });
+            await axios.post(`${backendUrl}/api/auth/logout`, {}, { withCredentials: true });
             navigate('/login');
         } catch (err) {
             console.error('Failed to logout', err);

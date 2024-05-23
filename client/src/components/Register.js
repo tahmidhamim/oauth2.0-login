@@ -5,6 +5,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Auth.css';
 
+const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+
 const Register = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -14,7 +16,7 @@ const Register = () => {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/auth/isAuthenticated', {
+                const response = await axios.get(`${backendUrl}/auth/isAuthenticated`, {
                     withCredentials: true
                 });
                 if (response.data.isAuthenticated) {
@@ -31,7 +33,7 @@ const Register = () => {
     const onSubmit = async e => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:5000/auth/register', { name, email, password }, { withCredentials: true });
+            await axios.post(`${backendUrl}/auth/register`, { name, email, password }, { withCredentials: true });
             toast.success('Registration successful! Redirecting to login...');
             setTimeout(() => {
                 navigate('/login');

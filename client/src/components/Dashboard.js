@@ -7,6 +7,8 @@ import { Table, Pagination, Dropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Dashboard.css';
 
+const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+
 const Dashboard = () => {
     const [username, setUsername] = useState(null);
     const [loginHistory, setLoginHistory] = useState(null);
@@ -18,7 +20,7 @@ const Dashboard = () => {
         // Fetch login history
         const fetchLoginHistory = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/auth/login-history', {
+                const response = await axios.get(`${backendUrl}/auth/login-history`, {
                     withCredentials: true
                 });
                 const data = response.data;
@@ -37,7 +39,7 @@ const Dashboard = () => {
 
     const logout = async () => {
         try {
-            await axios.post('http://localhost:5000/auth/logout', {}, { withCredentials: true });
+            await axios.post(`${backendUrl}/auth/logout`, {}, { withCredentials: true });
             navigate('/login');
         } catch (err) {
             console.error('Failed to logout', err);

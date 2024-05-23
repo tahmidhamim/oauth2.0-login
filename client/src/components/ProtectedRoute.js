@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+
 const ProtectedRoute = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
     const navigate = useNavigate();
@@ -9,7 +11,7 @@ const ProtectedRoute = ({ children }) => {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/auth/isAuthenticated', {
+                const response = await axios.get(`${backendUrl}/auth/isAuthenticated`, {
                     withCredentials: true
                 });
                 setIsAuthenticated(response.data.isAuthenticated);

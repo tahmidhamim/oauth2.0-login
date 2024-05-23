@@ -5,6 +5,8 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const router = express.Router();
 
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
 // Register route
 router.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
@@ -49,7 +51,7 @@ router.get('/google/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
     (req, res) => {
         // Successful authentication, redirect to dashboard.
-        res.redirect('http://localhost:3000');
+        res.redirect(frontendUrl);
     });
 
 // Facebook Auth
@@ -59,7 +61,7 @@ router.get('/facebook/callback',
     passport.authenticate('facebook', { failureRedirect: '/login' }),
     (req, res) => {
         // Successful authentication, redirect to dashboard.
-        res.redirect('http://localhost:3000');
+        res.redirect(frontendUrl);
     });
 
 // Logout route

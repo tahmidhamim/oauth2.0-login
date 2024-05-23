@@ -5,6 +5,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Auth.css';
 
+const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -13,7 +15,7 @@ const Login = () => {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/auth/isAuthenticated', {
+                const response = await axios.get(`${backendUrl}/auth/isAuthenticated`, {
                     withCredentials: true
                 });
                 if (response.data.isAuthenticated) {
@@ -30,7 +32,7 @@ const Login = () => {
     const onSubmit = async e => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:5000/auth/login', { email, password }, { withCredentials: true });
+            await axios.post(`${backendUrl}/auth/login`, { email, password }, { withCredentials: true });
             navigate('/');
         } catch (err) {
             console.error('Failed to login', err);
@@ -55,10 +57,10 @@ const Login = () => {
                 </form>
                 <p>Don't have an account? <Link to="/register">Register</Link></p>
                 <div className="social-login">
-                    <button className="social-button google" onClick={() => window.location.href = 'http://localhost:5000/auth/google'}>
+                    <button className="social-button google" onClick={() => window.location.href = `${backendUrl}/auth/google`}>
                         Login with Google
                     </button>
-                    <button className="social-button facebook" onClick={() => window.location.href = 'http://localhost:5000/auth/facebook'}>
+                    <button className="social-button facebook" onClick={() => window.location.href = `${backendUrl}/auth/facebook`}>
                         Login with Facebook
                     </button>
                 </div>

@@ -4,6 +4,8 @@ const FacebookStrategy = require('passport-facebook').Strategy;
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 
+const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+
 module.exports = function(passport) {
     passport.use(new LocalStrategy({
         usernameField: 'email',
@@ -32,7 +34,7 @@ module.exports = function(passport) {
     passport.use(new GoogleStrategy({
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: "http://localhost:5000/auth/google/callback"
+        callbackURL: `${backendUrl}/auth/google/callback`
     }, async (accessToken, refreshToken, profile, done) => {
         const newUser = {
             googleId: profile.id,
@@ -59,7 +61,7 @@ module.exports = function(passport) {
     passport.use(new FacebookStrategy({
         clientID: process.env.FACEBOOK_APP_ID,
         clientSecret: process.env.FACEBOOK_APP_SECRET,
-        callbackURL: "http://localhost:5000/auth/facebook/callback",
+        callbackURL: `${backendUrl}/auth/facebook/callback`,
         profileFields: ['id', 'displayName', 'emails']
     }, async (accessToken, refreshToken, profile, done) => {
         const newUser = {

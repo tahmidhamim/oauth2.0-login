@@ -7,7 +7,7 @@ import { Table, Pagination, Dropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Dashboard.css';
 
-const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
 
 const Dashboard = () => {
     const [username, setUsername] = useState(null);

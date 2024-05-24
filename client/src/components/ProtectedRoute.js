@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
 
 const ProtectedRoute = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(null);

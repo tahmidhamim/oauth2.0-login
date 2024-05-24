@@ -34,7 +34,7 @@ module.exports = function(passport) {
     passport.use(new GoogleStrategy({
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: `${backendUrl}/api/auth/google/callback`
+        callbackURL: `${backendUrl}/auth/google/callback`
     }, async (accessToken, refreshToken, profile, done) => {
         const newUser = {
             googleId: profile.id,
@@ -61,7 +61,7 @@ module.exports = function(passport) {
     passport.use(new FacebookStrategy({
         clientID: process.env.FACEBOOK_APP_ID,
         clientSecret: process.env.FACEBOOK_APP_SECRET,
-        callbackURL: `${backendUrl}/api/auth/facebook/callback`,
+        callbackURL: `${backendUrl}/auth/facebook/callback`,
         profileFields: ['id', 'displayName', 'emails']
     }, async (accessToken, refreshToken, profile, done) => {
         const newUser = {

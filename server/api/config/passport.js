@@ -3,6 +3,9 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
 

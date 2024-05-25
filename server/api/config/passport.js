@@ -8,6 +8,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+console.log('passport.js-BACKEND_URL: ', process.env.BACKEND_URL);
 
 module.exports = function(passport) {
     passport.use(new LocalStrategy({

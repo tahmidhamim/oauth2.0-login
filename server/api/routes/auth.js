@@ -9,6 +9,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+console.log('auth.js-FRONTEND_URL: ', process.env.FRONTEND_URL);
 
 // Register route
 router.post('/register', async (req, res) => {

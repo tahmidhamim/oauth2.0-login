@@ -8,7 +8,6 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
-console.log('passport.js-BACKEND_URL: ', process.env.BACKEND_URL);
 
 module.exports = function(passport) {
     passport.use(new LocalStrategy({
@@ -16,6 +15,7 @@ module.exports = function(passport) {
         passwordField: 'password'
     }, async (email, password, done) => {
         try {
+            console.log(backendUrl);
             let user = await User.findOne({ email });
             if (!user) {
                 return done(null, false, { message: 'Invalid credentials' });
@@ -47,6 +47,7 @@ module.exports = function(passport) {
             loginHistory: [{ method: 'Google', date: new Date() }]
         };
         try {
+            console.log(backendUrl);
             let user = await User.findOne({ email: profile.emails[0].value });
             if (user) {
                 user.googleId = profile.id;
@@ -75,6 +76,7 @@ module.exports = function(passport) {
             loginHistory: [{ method: 'Facebook', date: new Date() }]
         };
         try {
+            console.log(backendUrl);
             let user = await User.findOne({ email: profile.emails[0].value });
             if (user) {
                 user.facebookId = profile.id;

@@ -12,8 +12,6 @@ const app = express();
 // Connect to database
 connectDB();
 
-console.log('index.js-FRONTEND_URL: ', process.env.FRONTEND_URL);
-console.log('index.js-SESSION_SECRET: ', process.env.SESSION_SECRET);
 // Middleware
 app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',

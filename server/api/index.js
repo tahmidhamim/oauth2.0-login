@@ -32,7 +32,8 @@ app.use(session({
     cookie: {
         secure: process.env.NODE_ENV === 'production', // Ensure secure cookies in production
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 // 1 day
+        maxAge: 1000 * 60 * 60 * 24, // 1 day
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // For cross-site cookie
     }
 }));
 app.use(passport.initialize());

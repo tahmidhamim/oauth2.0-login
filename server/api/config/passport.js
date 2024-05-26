@@ -15,7 +15,7 @@ module.exports = function(passport) {
         passwordField: 'password'
     }, async (email, password, done) => {
         try {
-            console.log(backendUrl);
+            console.log('backendUrl - ', backendUrl);
             let user = await User.findOne({ email });
             if (!user) {
                 return done(null, false, { message: 'Invalid credentials' });
@@ -47,7 +47,7 @@ module.exports = function(passport) {
             loginHistory: [{ method: 'Google', date: new Date() }]
         };
         try {
-            console.log(backendUrl);
+            console.log('backendUrl - ', backendUrl);
             let user = await User.findOne({ email: profile.emails[0].value });
             if (user) {
                 user.googleId = profile.id;
@@ -76,7 +76,7 @@ module.exports = function(passport) {
             loginHistory: [{ method: 'Facebook', date: new Date() }]
         };
         try {
-            console.log(backendUrl);
+            console.log('backendUrl - ', backendUrl);
             let user = await User.findOne({ email: profile.emails[0].value });
             if (user) {
                 user.facebookId = profile.id;

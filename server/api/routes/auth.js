@@ -89,6 +89,8 @@ router.get('/login-history', (req, res) => {
 });
 
 router.get('/isAuthenticated', (req, res) => {
+    console.log('Session:', req.session);
+    console.log('User:', req.user);
     res.json({ isAuthenticated: req.isAuthenticated() });
 });
 

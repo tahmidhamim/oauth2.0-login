@@ -147,7 +147,7 @@ const Dashboard = () => {
                                 {i + 1}
                             </Pagination.Item>
                         ))}
-                        {totalPages - currentPage > 4 &&
+                        {totalPages - currentPage > 3 &&
                             <Pagination.Item key={totalPages + 1} active={false} onClick={() => {}}>
                                 {'...'}
                             </Pagination.Item>

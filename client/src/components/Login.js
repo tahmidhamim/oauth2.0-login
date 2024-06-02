@@ -14,15 +14,18 @@ const Login = () => {
 
     useEffect(() => {
         const checkAuth = async () => {
-            try {
-                const response = await axios.get(`${backendUrl}/auth/isAuthenticated`, {
-                    withCredentials: true
-                });
-                if (response.data.isAuthenticated) {
-                    navigate('/');
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const response = await axios.get(`${backendUrl}/auth/isAuthenticated`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    if (response.data.isAuthenticated) {
+                        navigate('/');
+                    }
+                } catch (err) {
+                    console.error('Failed to check authentication', err);
                 }
-            } catch (err) {
-                console.error('Failed to check authentication', err);
             }
         };
 
@@ -32,7 +35,9 @@ const Login = () => {
     const onSubmit = async e => {
         e.preventDefault();
         try {
-            await axios.post(`${backendUrl}/auth/login`, { email, password }, { withCredentials: true });
+            const response = await axios.post(`${backendUrl}/auth/login`, { email, password });
+            const token = response.data.token;
+            localStorage.setItem('token', token);
             navigate('/');
         } catch (err) {
             console.error('Failed to login', err);

@@ -1,10 +1,9 @@
 const express = require('express');
 const connectDB = require('./config/db');
 const passport = require('passport');
-const session = require('express-session');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const MongoStore = require('connect-mongo');
+const jwt = require('jsonwebtoken');
 
 dotenv.config();
 
@@ -20,24 +19,7 @@ app.use(cors({
 }));
 app.use(express.json());
 
-if (process.env.NODE_ENV === 'production') {
-    app.set('trust proxy', 1); // Trust first proxy
-}
-
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-    cookie: {
-        secure: process.env.NODE_ENV === 'production', // Ensure secure cookies in production
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24, // 1 day
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // For cross-site cookie
-    }
-}));
 app.use(passport.initialize());
-app.use(passport.session());
 
 // Passport config
 require('./config/passport')(passport);

@@ -19,15 +19,21 @@ const Dashboard = () => {
     useEffect(() => {
         // Fetch login history
         const fetchLoginHistory = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                navigate('/login');
+                return;
+            }
             try {
                 const response = await axios.get(`${backendUrl}/auth/login-history`, {
-                    withCredentials: true
+                    headers: { Authorization: `Bearer ${token}` }
                 });
                 const data = response.data;
                 setUsername(data.username);
                 setLoginHistory(data.loginHistory.sort((a, b) => new Date(b.date) - new Date(a.date)));
             } catch (err) {
                 console.error('Failed to fetch login history', err);
+                localStorage.removeItem('token');
                 navigate('/login');
             }
         };
@@ -38,8 +44,9 @@ const Dashboard = () => {
     if (!username || !loginHistory) return <div>Loading...</div>;
 
     const logout = async () => {
+        localStorage.removeItem('token');
         try {
-            await axios.post(`${backendUrl}/auth/logout`, {}, { withCredentials: true });
+            await axios.post(`${backendUrl}/auth/logout`);
             navigate('/login');
         } catch (err) {
             console.error('Failed to logout', err);

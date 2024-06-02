@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
-import ProtectedRoute from './components/ProtectedRoute';
+import OAuthSuccess from './components/OAuthSuccess';
 
 const App = () => {
     return (
@@ -11,14 +11,8 @@ const App = () => {
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route
-                    path="/"
-                    element={
-                        <ProtectedRoute>
-                            <Dashboard />
-                        </ProtectedRoute>
-                    }
-                />
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/oauth-success" element={<OAuthSuccess />} />
             </Routes>
         </Router>
     );

@@ -15,15 +15,18 @@ const Register = () => {
 
     useEffect(() => {
         const checkAuth = async () => {
-            try {
-                const response = await axios.get(`${backendUrl}/auth/isAuthenticated`, {
-                    withCredentials: true
-                });
-                if (response.data.isAuthenticated) {
-                    navigate('/');
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const response = await axios.get(`${backendUrl}/auth/isAuthenticated`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    if (response.data.isAuthenticated) {
+                        navigate('/');
+                    }
+                } catch (err) {
+                    console.error('Failed to check authentication', err);
                 }
-            } catch (err) {
-                console.error('Failed to check authentication', err);
             }
         };
 
@@ -33,7 +36,9 @@ const Register = () => {
     const onSubmit = async e => {
         e.preventDefault();
         try {
-            await axios.post(`${backendUrl}/auth/register`, { name, email, password }, { withCredentials: true });
+            const response = await axios.post(`${backendUrl}/auth/register`, { name, email, password });
+            const token = response.data.token;
+            localStorage.setItem('token', token);
             toast.success('Registration successful! Redirecting to login...');
             setTimeout(() => {
                 navigate('/login');

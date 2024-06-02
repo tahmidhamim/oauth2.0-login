@@ -136,11 +136,22 @@ const Dashboard = () => {
                     <Pagination>
                         <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
                         <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
+                        {currentPage > 4 &&
+                            <Pagination.Item key={1} active={false} onClick={() => {}}>
+                                {'...'}
+                            </Pagination.Item>
+                        }
                         {Array.from({ length: totalPages }, (_, i) => (
+                            Math.abs(i + 1 - currentPage) < 4 &&
                             <Pagination.Item key={i + 1} active={i + 1 === currentPage} onClick={() => handlePageChange(i + 1)}>
                                 {i + 1}
                             </Pagination.Item>
                         ))}
+                        {totalPages - currentPage > 4 &&
+                            <Pagination.Item key={totalPages + 1} active={false} onClick={() => {}}>
+                                {'...'}
+                            </Pagination.Item>
+                        }
                         <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
                         <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
                     </Pagination>

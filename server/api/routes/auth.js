@@ -7,6 +7,7 @@ const User = require('../models/User');
 const router = express.Router();
 const dotenv = require('dotenv');
 const redis = require('redis');
+const { sendWelcomeEmail } = require('../email/sendEmail');
 
 dotenv.config();
 
@@ -58,6 +59,7 @@ router.post('/register', async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password, salt);
         await user.save();
+        sendWelcomeEmail(email, name);
         res.send('User registered');
     } catch (err) {
         console.error(err.message);

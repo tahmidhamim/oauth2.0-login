@@ -4,6 +4,7 @@ const FacebookStrategy = require('passport-facebook').Strategy;
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const dotenv = require('dotenv');
+const { sendWelcomeEmail } = require('../email/sendEmail');
 
 dotenv.config();
 
@@ -54,6 +55,7 @@ module.exports = function(passport) {
                 done(null, user);
             } else {
                 user = await User.create(newUser);
+                sendWelcomeEmail(newUser.email, newUser.name);
                 done(null, user);
             }
         } catch (err) {
@@ -82,6 +84,7 @@ module.exports = function(passport) {
                 done(null, user);
             } else {
                 user = await User.create(newUser);
+                sendWelcomeEmail(newUser.email, newUser.name);
                 done(null, user);
             }
         } catch (err) {

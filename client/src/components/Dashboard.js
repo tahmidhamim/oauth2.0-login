@@ -93,8 +93,15 @@ const Dashboard = () => {
     return (
         <div className="dashboard-container">
             <button className="logout-button" onClick={logout}>Logout</button>
+            <h2 className="welcome-message">Welcome, {username}</h2>
             <div className="dashboard-content">
-                <h2 className="welcome-message">Welcome, {username}</h2>
+                <div className="chart login-count">
+                    <h4>Login Count</h4>
+                    <p>Custom: {loginCounts.Custom}</p>
+                    <p>Google: {loginCounts.Google}</p>
+                    <p>Facebook: {loginCounts.Facebook}</p>
+                    <p className="total">Total: {loginHistory.length}</p>
+                </div>
                 <div className="chart">
                     <h4>Pie Chart</h4>
                     <Pie data={data} />

@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "OAuth 2.0 Login",
+  "name": "OAuth 2.0 Login with Google and Facebook",
   "icons": [
     {
       "src": "favicon.ico",

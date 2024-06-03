@@ -6,10 +6,24 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const router = express.Router();
 const dotenv = require('dotenv');
+const redis = require('redis');
 
 dotenv.config();
 
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+// Create Redis client
+const redisClient = redis.createClient({
+    url: process.env.REDIS_URL || 'redis://localhost:6379'
+});
+
+redisClient.on('error', (err) => {
+    console.error('Redis error: ', err);
+});
+
+(async () => {
+    await redisClient.connect();
+})();
 
 const createToken = (user) => {
     return jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
@@ -17,12 +31,13 @@ const createToken = (user) => {
     });
 };
 
-// In-memory store for temporary codes
-const tempCodeStore = {};
-
-const generateTempCode = (userId, email) => {
+const generateTempCode = async (userId, email) => {
     const code = crypto.randomBytes(20).toString('hex');
-    tempCodeStore[code] = { userId, email, expires: Date.now() + 300000 }; // 5 minutes expiration
+    const expires = Date.now() + 300000; // 5 minutes expiration
+    const tempData = JSON.stringify({ userId, email, expires });
+
+    await redisClient.setEx(code, 300, tempData); // Store in Redis with 5 minutes expiration
+
     return code;
 };
 
@@ -66,8 +81,8 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 
 router.get('/google/callback',
     passport.authenticate('google', { failureRedirect: '/login', session: false }),
-    (req, res) => {
-        const tempCode = generateTempCode(req.user.id, req.user.email);
+    async (req, res) => {
+        const tempCode = await generateTempCode(req.user.id, req.user.email);
         res.redirect(`${frontendUrl}/oauth-success?code=${tempCode}`);
     });
 
@@ -76,8 +91,8 @@ router.get('/facebook', passport.authenticate('facebook', { scope: ['email'], se
 
 router.get('/facebook/callback',
     passport.authenticate('facebook', { failureRedirect: '/login', session: false }),
-    (req, res) => {
-        const tempCode = generateTempCode(req.user.id, req.user.email);
+    async (req, res) => {
+        const tempCode = await generateTempCode(req.user.id, req.user.email);
         res.redirect(`${frontendUrl}/oauth-success?code=${tempCode}`);
     });
 
@@ -120,18 +135,24 @@ router.get('/isAuthenticated', verifyToken, (req, res) => {
 });
 
 // Endpoint to exchange code for token
-router.post('/exchange-code', (req, res) => {
+router.post('/exchange-code', async (req, res) => {
     const { code } = req.body;
-    const tempData = tempCodeStore[code];
 
-    if (!tempData || tempData.expires < Date.now()) {
+    const tempData = await redisClient.get(code);
+    if (!tempData) {
         return res.status(400).json({ message: 'Invalid or expired code' });
     }
 
-    const user = { id: tempData.userId, email: tempData.email }; // Fetch user data if necessary
+    const parsedData = JSON.parse(tempData);
+
+    if (parsedData.expires < Date.now()) {
+        return res.status(400).json({ message: 'Invalid or expired code' });
+    }
+
+    const user = { id: parsedData.userId, email: parsedData.email }; // Fetch user data if necessary
     const token = createToken(user);
 
-    delete tempCodeStore[code]; // Remove the code once used
+    await redisClient.del(code); // Remove the code once used
 
     res.json({ token });
 });

@@ -9,6 +9,7 @@
 .dashboard-container {
     padding: 20px;
     position: relative;
+    background-color: #ebdfef;
 }
 
 .welcome-message {
@@ -20,7 +21,7 @@
     top: 20px;
     right: 20px;
     padding: 10px 20px;
-    background-color: #dc3545;
+    background-color: #7a4398;
     color: white;
     border: none;
     border-radius: 5px;
@@ -28,7 +29,7 @@
 }
 
 .logout-button:hover {
-    background-color: #970d1b;
+    background-color: rgb(94, 22, 111);
 }
 
 .dashboard-content {
@@ -99,4 +100,78 @@
 .table-container .table {
     align-items: center;
     text-align: center;
+    border: 1.5px solid #7a4398;
+    border-color: #7a4398; /* Your desired color */
+}
+
+/* Change color of the dropdown */
+.dropdown-toggle {
+    background-color: #7a4398; /* Your desired color */
+    border-color: #7a4398; /* Your desired color */
+    color: #fff;
+}
+
+.dropdown-toggle:hover,
+.dropdown-toggle:focus,
+.dropdown-toggle:active {
+    background-color: rgb(94, 22, 111); /* Darker shade for hover/active state */
+    border-color: rgb(94, 22, 111); /* Darker shade for hover/active state */
+    color: #fff;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+    background-color: #fff; /* Background color for the dropdown menu */
+    border: 1px solid #7a4398; /* Border color for the dropdown menu */
+}
+
+/* Dropdown menu items color */
+.dropdown-menu .dropdown-item {
+    color: #000; /* Default text color for dropdown items */
+}
+
+.dropdown-menu .dropdown-item:hover,
+.dropdown-menu .dropdown-item:focus {
+    background-color: #7a4398; /* Background color on hover/active state */
+    color: #fff; /* Text color on hover/active state */
+}
+
+.dropdown-menu .dropdown-item.active,
+.dropdown-menu .dropdown-item.active:hover,
+.dropdown-menu .dropdown-item.active:focus {
+    background-color: #7a4398; /* Your desired color */
+    color: #fff;
+}
+
+/* Change color of the active pagination page */
+.pagination .page-item.active .page-link {
+    background-color: #7a4398; /* Your desired color */
+    border-color: #7a4398; /* Your desired color */
+    color: #fff;
+}
+
+.pagination .page-item .page-link {
+    color: #7a4398; /* Your desired color */
+    border-color: #7a4398; /* Your desired color */
+}
+
+.pagination .page-item .page-link:hover,
+.pagination .page-item .page-link:focus {
+    background-color: #e9ecef;
+    color: rgb(94, 22, 111); /* Darker shade for hover/active state */
+}
+
+/* Prevent hover color change on the active page */
+.pagination .page-item.active .page-link:hover,
+.pagination .page-item.active .page-link:focus {
+    background-color: #7a4398; /* Your desired color */
+    border-color: #7a4398; /* Your desired color */
+    color: #fff;
+}
+
+/* Change color of the table head */
+.table thead th {
+    background-color: #7a4398; /* Your desired color */
+    color: #fff; /* Text color for table head */
+    border-color: #7a4398; /* Border color for header */
 }

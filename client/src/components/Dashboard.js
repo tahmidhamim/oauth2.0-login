@@ -131,7 +131,7 @@ const Dashboard = () => {
                 </Table>
                 <div className="d-flex justify-content-between">
                     <Dropdown onSelect={handleItemsPerPageChange}>
-                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                        <Dropdown.Toggle variant="purple" id="dropdown-basic">
                             {itemsPerPage}
                         </Dropdown.Toggle>
                         <Dropdown.Menu>

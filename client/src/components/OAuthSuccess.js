@@ -17,9 +17,7 @@ const OAuthSuccess = () => {
                 const response = await axios.post(`${backendUrl}/auth/exchange-code`, { code });
                 const { token } = response.data;
                 localStorage.setItem('token', token); // Securely store the token
-                setTimeout(() => {
-                    navigate('/');
-                }, 2000);
+                navigate('/');
             } catch (err) {
                 console.error(err);
                 toast.error('Login failed');

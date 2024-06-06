@@ -69,8 +69,8 @@ const Login = () => {
                         Login with Facebook
                     </button>
                 </div>
-                <ToastContainer />
             </div>
+            <ToastContainer />
         </div>
     );
 };

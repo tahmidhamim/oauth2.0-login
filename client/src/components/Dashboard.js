@@ -29,6 +29,10 @@ const Dashboard = () => {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const data = response.data;
+                if (!data.isVerified) {
+                    navigate('/verify-email');
+                    return;
+                }
                 setUsername(data.username);
                 setLoginHistory(data.loginHistory.sort((a, b) => new Date(b.date) - new Date(a.date)));
             } catch (err) {

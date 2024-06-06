@@ -44,6 +44,7 @@ module.exports = function(passport) {
             googleId: profile.id,
             name: profile.displayName,
             email: profile.emails[0].value,
+            isVerified: true,
             loginHistory: [{ method: 'Google', date: new Date() }]
         };
         try {
@@ -73,6 +74,7 @@ module.exports = function(passport) {
             facebookId: profile.id,
             name: profile.displayName,
             email: profile.emails[0].value,
+            isVerified: true,
             loginHistory: [{ method: 'Facebook', date: new Date() }]
         };
         try {

@@ -6,6 +6,8 @@ const UserSchema = new mongoose.Schema({
     password: { type: String },
     googleId: { type: String },
     facebookId: { type: String },
+    isVerified: { type: Boolean, default: false },
+    verificationToken: { type: String },
     loginHistory: [
         {
             method: { type: String },

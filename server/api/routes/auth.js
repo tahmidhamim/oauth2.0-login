@@ -7,7 +7,7 @@ const User = require('../models/User');
 const router = express.Router();
 const dotenv = require('dotenv');
 const redis = require('redis');
-const { sendWelcomeEmail } = require('../email/sendEmail');
+const { sendVerificationEmail } = require('../email/sendEmail');
 
 dotenv.config();
 
@@ -26,9 +26,9 @@ redisClient.on('error', (err) => {
     await redisClient.connect();
 })();
 
-const createToken = (user) => {
+const createToken = (user, expires) => {
     return jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
-        expiresIn: '1d'
+        expiresIn: expires
     });
 };
 
@@ -53,13 +53,18 @@ router.post('/register', async (req, res) => {
             user = new User({
                 name,
                 email,
-                password
+                password,
+                verificationToken: null
             });
+            const verificationToken = createToken(user, '1h');
+            user.verificationToken = verificationToken;
         }
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password, salt);
         await user.save();
-        sendWelcomeEmail(email, name);
+        if (!user.isVerified) {
+            sendVerificationEmail(email, name, user.verificationToken);
+        }
         res.send('User registered');
     } catch (err) {
         console.error(err.message);
@@ -73,7 +78,7 @@ router.post('/login', (req, res, next) => {
         if (err) return next(err);
         if (!user) return res.status(400).json({ msg: 'Invalid credentials' });
 
-        const token = createToken(user);
+        const token = createToken(user, '1d');
         res.json({ token, msg: 'Login successful' });
     })(req, res, next);
 });
@@ -125,6 +130,7 @@ router.get('/login-history', verifyToken, async (req, res) => {
         }
         res.json({
             username: user.name,
+            isVerified: user.isVerified,
             loginHistory: user.loginHistory
         });
     } catch (err) {
@@ -152,11 +158,74 @@ router.post('/exchange-code', async (req, res) => {
     }
 
     const user = { id: parsedData.userId, email: parsedData.email }; // Fetch user data if necessary
-    const token = createToken(user);
+    const token = createToken(user, '1d');
 
     await redisClient.del(code); // Remove the code once used
 
     res.json({ token });
+});
+
+router.get('/verify-email', async (req, res) => {
+    const { token } = req.query;
+  
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findOne({ email: decoded.email, verificationToken: token });
+    
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid or expired token' });
+        }
+    
+        user.isVerified = true;
+        user.verificationToken = null;
+        await user.save();
+
+        const tempCode = await generateTempCode(user.id, user.email);
+        res.redirect(`${frontendUrl}/oauth-success?code=${tempCode}`);
+    } catch (error) {
+        res.status(400).json({ message: 'Invalid token' });
+    }
+});
+
+router.get('/resend-verification-email', verifyToken, async (req, res) => {
+    const { email } = req.user;
+  
+    try {
+        const user = await User.findOne({ email });
+    
+        if (!user) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+    
+        if (user.isVerified) {
+            return res.status(400).json({ message: 'Email is already verified' });
+        }
+    
+        const verificationToken = createToken(user, '1h');
+        user.verificationToken = verificationToken;
+        await user.save();
+    
+        sendVerificationEmail(email, user.name, verificationToken);
+        res.status(200).json({ message: 'Verification email resent successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error resending verification email', error });
+    }
+});
+
+router.get('/isVerified', verifyToken, async (req, res) => {
+    const { id } = req.user;
+  
+    try {
+        const user = await User.findById(id);
+    
+        if (!user) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        res.json({ isVerified: user.isVerified });
+    } catch (error) {
+        res.status(500).json({ message: 'Error resending verification email', error });
+    }
 });
 
 module.exports = router;

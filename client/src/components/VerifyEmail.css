@@ -1,0 +1,56 @@
+.verify-email-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #ebdfef;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+p {
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.logout-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #7a4398;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background-color: rgb(94, 22, 111);
+}
+
+.button-basic {
+    padding: 10px 20px;
+    background-color: #7a4398;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.button-basic:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.button-basic:not(:disabled):hover {
+    background-color: rgb(94, 22, 111);
+}

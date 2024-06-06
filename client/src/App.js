@@ -5,6 +5,8 @@ import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import OAuthSuccess from './components/OAuthSuccess';
 import VerifyEmail from './components/VerifyEmail';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 
 const App = () => {
     return (
@@ -15,6 +17,8 @@ const App = () => {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/oauth-success" element={<OAuthSuccess />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
             </Routes>
         </Router>
     );

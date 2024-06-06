@@ -7,7 +7,7 @@ const User = require('../models/User');
 const router = express.Router();
 const dotenv = require('dotenv');
 const redis = require('redis');
-const { sendVerificationEmail } = require('../email/sendEmail');
+const { sendVerificationEmail, sendResetEmail } = require('../email/sendEmail');
 
 dotenv.config();
 
@@ -225,6 +225,51 @@ router.get('/isVerified', verifyToken, async (req, res) => {
         res.json({ isVerified: user.isVerified });
     } catch (error) {
         res.status(500).json({ message: 'Error resending verification email', error });
+    }
+});
+
+// Forgot Password - Send Reset Link
+router.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        const token = createToken(user, '1h');
+
+        sendResetEmail(user.email, user.name, token);
+
+        res.status(200).json({ message: 'Password reset link sent to your email' });
+    } catch (error) {
+        res.status(500).json({ msg: 'Server error' });
+    }
+});
+
+// Reset Password - Update Password
+router.post('/reset-password/:token', async (req, res) => {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.id);
+
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+        user.isVerified = true;
+        user.verificationToken = null;
+        await user.save();
+
+        res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+        res.status(500).json({ msg: 'Server error' });
     }
 });
 

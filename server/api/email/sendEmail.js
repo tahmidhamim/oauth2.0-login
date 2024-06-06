@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
 
 const transporter = nodemailer.createTransport({
@@ -40,4 +41,30 @@ const sendVerificationEmail = (toEmail, name, token) => {
     });
 };
 
-module.exports = { sendVerificationEmail };
+const sendResetEmail = (toEmail, name, token) => {
+    const resetLink = `${frontendUrl}/reset-password/${token}`;
+
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: toEmail,
+        subject: 'Password Reset',
+        html: `
+            <h1>Reset your password!</h1>
+            <p>Dear ${name},</p>
+            <p>Click the link below to reset your password:</p>
+            <a href="${resetLink}">Reset Password</a>
+            <p>This link will expire in 1 hour.</p>
+            <p>Best regards,<br>Tahmid Hamim</p>
+            `,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log('Error sending email:', error);
+        } else {
+            console.log('Email sent:', info.response);
+        }
+    });
+};
+
+module.exports = { sendVerificationEmail, sendResetEmail };

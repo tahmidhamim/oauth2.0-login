@@ -118,6 +118,7 @@ const verifyToken = (req, res, next) => {
         req.user = decoded;
         next();
     } catch (err) {
+        console.error(err.message);
         res.status(401).json({ message: 'Unauthorized' });
     }
 };
@@ -134,6 +135,7 @@ router.get('/login-history', verifyToken, async (req, res) => {
             loginHistory: user.loginHistory
         });
     } catch (err) {
+        console.error(err.message);
         res.status(500).send('Server error');
     }
 });
@@ -183,6 +185,7 @@ router.get('/verify-email', async (req, res) => {
         const tempCode = await generateTempCode(user.id, user.email);
         res.redirect(`${frontendUrl}/oauth-success?code=${tempCode}`);
     } catch (error) {
+        console.error(error.message);
         res.status(400).json({ message: 'Invalid token' });
     }
 });
@@ -208,6 +211,7 @@ router.get('/resend-verification-email', verifyToken, async (req, res) => {
         sendVerificationEmail(email, user.name, verificationToken);
         res.status(200).json({ message: 'Verification email resent successfully' });
     } catch (error) {
+        console.error(error.message);
         res.status(500).json({ message: 'Error resending verification email', error });
     }
 });
@@ -224,6 +228,7 @@ router.get('/isVerified', verifyToken, async (req, res) => {
 
         res.json({ isVerified: user.isVerified });
     } catch (error) {
+        console.error(error.message);
         res.status(500).json({ message: 'Error resending verification email', error });
     }
 });
@@ -244,6 +249,7 @@ router.post('/forgot-password', async (req, res) => {
 
         res.status(200).json({ message: 'Password reset link sent to your email' });
     } catch (error) {
+        console.error(error.message);
         res.status(500).json({ msg: 'Server error' });
     }
 });
@@ -269,6 +275,7 @@ router.post('/reset-password/:token', async (req, res) => {
 
         res.status(200).json({ message: 'Password updated successfully' });
     } catch (error) {
+        console.error(error.message);
         res.status(500).json({ msg: 'Server error' });
     }
 });

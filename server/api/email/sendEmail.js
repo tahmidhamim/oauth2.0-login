@@ -42,7 +42,7 @@ const sendVerificationEmail = (toEmail, name, token) => {
 };
 
 const sendResetEmail = (toEmail, name, token) => {
-    const resetLink = `${frontendUrl}/reset-password/${token}`;
+    const resetLink = `${frontendUrl}/reset-password/token=${token}`;
 
     const mailOptions = {
         from: process.env.EMAIL_USER,

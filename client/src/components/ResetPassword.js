@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Auth.css';
@@ -9,8 +9,7 @@ const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
 
 const ResetPassword = () => {
     const [password, setPassword] = useState('');
-    const [searchParams] = useSearchParams();
-    const token = searchParams.get('token');
+    const { token } = useParams();
     const navigate = useNavigate();
 
     const onSubmit = async e => {

@@ -15,9 +15,20 @@ const OAuthSuccess = () => {
         const exchangeCodeForToken = async () => {
             try {
                 const response = await axios.post(`${backendUrl}/auth/exchange-code`, { code });
-                const { token } = response.data;
+                const { token, is2FAEnabled, otpExpires } = response.data;
                 localStorage.setItem('token', token); // Securely store the token
-                navigate('/');
+                
+                if (is2FAEnabled) {
+                    if (!otpExpires) {
+                        await axios.get(`${backendUrl}/auth/send-otp`, {
+                            headers: { Authorization: `Bearer ${token}` }
+                        });
+                        localStorage.setItem('resendOTPTimestamp', Date.now().toString());
+                    }
+                    navigate('/verify-otp');
+                } else {
+                    navigate('/');
+                }
             } catch (err) {
                 console.error(err);
                 toast.error('Login failed');

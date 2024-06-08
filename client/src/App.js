@@ -7,6 +7,7 @@ import OAuthSuccess from './components/OAuthSuccess';
 import VerifyEmail from './components/VerifyEmail';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
+import VerifyOTP from './components/VerifyOTP';
 
 const App = () => {
     return (
@@ -19,6 +20,7 @@ const App = () => {
                 <Route path="/verify-email" element={<VerifyEmail />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/verify-otp" element={<VerifyOTP />} />
             </Routes>
         </Router>
     );

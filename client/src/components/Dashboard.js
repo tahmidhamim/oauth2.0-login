@@ -6,10 +6,12 @@ import 'chart.js/auto';
 import { Table, Pagination, Dropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Dashboard.css';
+import EditProfileModal from './EditProfileModal';
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
 
 const Dashboard = () => {
+    const [isEditProfileModalOpen, setEditProfileModalOpen] = useState(false);
     const [username, setUsername] = useState(null);
     const [loginHistory, setLoginHistory] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -25,12 +27,16 @@ const Dashboard = () => {
                 return;
             }
             try {
-                const response = await axios.get(`${backendUrl}/auth/login-history`, {
+                const response = await axios.get(`${backendUrl}/auth/profile`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const data = response.data;
                 if (!data.isVerified) {
                     navigate('/verify-email');
+                    return;
+                }
+                if (data.is2FAEnabled && data.otpExpires) {
+                    navigate('/verify-otp');
                     return;
                 }
                 setUsername(data.username);
@@ -50,7 +56,7 @@ const Dashboard = () => {
     const logout = async () => {
         localStorage.removeItem('token');
         try {
-            await axios.post(`${backendUrl}/auth/logout`);
+            await axios.get(`${backendUrl}/auth/logout`);
             navigate('/login');
         } catch (err) {
             console.error('Failed to logout', err);
@@ -94,8 +100,18 @@ const Dashboard = () => {
         setCurrentPage(1);
     };
 
+    const handleEditProfileClick = () => {
+        setEditProfileModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setEditProfileModalOpen(false);
+    };
+
     return (
         <div className="dashboard-container">
+            <button className="edit-button" onClick={handleEditProfileClick}>Edit Profile</button>
+            <EditProfileModal isOpen={isEditProfileModalOpen} onClose={handleCloseModal} />
             <button className="logout-button" onClick={logout}>Logout</button>
             <h2 className="welcome-message">Welcome, {username}</h2>
             <div className="dashboard-content">

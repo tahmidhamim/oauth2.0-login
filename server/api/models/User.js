@@ -8,6 +8,10 @@ const UserSchema = new mongoose.Schema({
     facebookId: { type: String },
     isVerified: { type: Boolean, default: false },
     verificationToken: { type: String },
+    phoneNumber: { type: String, default: '' },
+    is2FAEnabled: { type: Boolean, default: false },
+    otp: { type: String, default: null },
+    otpExpires: { type: Date, default: null },
     loginHistory: [
         {
             method: { type: String },

@@ -16,6 +16,11 @@
     margin-left: 5%;
 }
 
+.edit-button {
+    margin-left: 84%;
+    padding: 8px 18px;
+}
+
 .logout-button {
     position: absolute;
     top: 20px;
@@ -37,8 +42,8 @@
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 20px;
-    width: 90%;
-    margin-left: 5%;
+    width: 92%;
+    margin-left: 4%;
     margin-top: 50px;
 }
 
@@ -174,4 +179,24 @@
     background-color: #7a4398; /* Your desired color */
     color: #fff; /* Text color for table head */
     border-color: #7a4398; /* Border color for header */
+}
+
+.button-basic {
+    padding: 10px 20px;
+    background-color: #7a4398;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.button-basic:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.button-basic:not(:disabled):hover {
+    background-color: rgb(94, 22, 111);
 }

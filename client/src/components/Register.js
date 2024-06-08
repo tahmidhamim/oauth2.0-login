@@ -11,6 +11,7 @@ const Register = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -36,10 +37,8 @@ const Register = () => {
     const onSubmit = async e => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${backendUrl}/auth/register`, { name, email, password });
-            const token = response.data.token;
-            localStorage.setItem('token', token);
-            toast.success('Registration successful! Redirecting to login...');
+            await axios.post(`${backendUrl}/auth/register`, { name, email, password, phoneNumber });
+            toast.success('Registration successful! Please verify your email.');
             setTimeout(() => {
                 navigate('/login');
             }, 2000); // Redirect after 2 seconds to show the success message
@@ -65,6 +64,10 @@ const Register = () => {
                     <div className="form-group">
                         <label htmlFor="password">Password:</label>
                         <input type="password" id="Password" value={password} onChange={e => setPassword(e.target.value)} required />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="phoneNumber">Phone Number (optional):</label>
+                        <input type="text" id="phoneNumber" value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} />
                     </div>
                     <button type="submit">Register</button>
                 </form>

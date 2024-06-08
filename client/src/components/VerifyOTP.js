@@ -1,16 +1,18 @@
+// VerifyOTP.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import './VerifyEmail.css';
+import './Auth.css';
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
 
-const VerifyEmail = () => {
-    const navigate = useNavigate();
+const VerifyOTP = () => {
+    const [otp, setOtp] = useState('');
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-    const [timer, setTimer] = useState(300); // 5 minutes in seconds
+    const [timer, setTimer] = useState(600); // 10 minutes in seconds
+    const navigate = useNavigate();
 
     useEffect(() => {
         let token = localStorage.getItem('token');
@@ -31,7 +33,14 @@ const VerifyEmail = () => {
                 response = await axios.get(`${backendUrl}/auth/isVerified`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                if (response.data.isVerified) {
+                if (!response.data.isVerified) {
+                    navigate('/verify-email');
+                    return;
+                }
+                response = await axios.get(`${backendUrl}/auth/profile`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (!response.data.is2FAEnabled || !response.data.otpExpires) {
                     navigate('/');
                 }
             } catch (err) {
@@ -43,14 +52,14 @@ const VerifyEmail = () => {
 
         checkAuth();
 
-        const savedTimestamp = localStorage.getItem('resendTimestamp');
+        const savedTimestamp = localStorage.getItem('resendOTPTimestamp');
         if (savedTimestamp) {
             const timePassed = Math.floor((Date.now() - parseInt(savedTimestamp)) / 1000);
-            if (timePassed < 300) {
+            if (timePassed < 600) {
                 setIsButtonDisabled(true);
-                setTimer(300 - timePassed);
+                setTimer(600 - timePassed);
             } else {
-                localStorage.removeItem('resendTimestamp');
+                localStorage.removeItem('resendOTPTimestamp');
             }
         }
     }, [navigate]);
@@ -63,7 +72,7 @@ const VerifyEmail = () => {
                     if (prevTimer <= 1) {
                         clearInterval(interval);
                         setIsButtonDisabled(false);
-                        return 300; // Reset timer to 5 minutes
+                        return 600; // Reset timer to 10 minutes
                     }
                     return prevTimer - 1;
                 });
@@ -72,6 +81,21 @@ const VerifyEmail = () => {
         return () => clearInterval(interval);
     }, [isButtonDisabled]);
 
+    const onSubmit = async e => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post(`${backendUrl}/auth/verify-otp`, { otp }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            toast.success(response.data.msg);
+            navigate('/');
+        } catch (err) {
+            console.error('Failed to verify OTP', err);
+            toast.error(err.response.data.msg || 'Invalid or expired OTP');
+        }
+    };
+
     const handleClick = async () => {
         let token = localStorage.getItem('token');
         if (!token) {
@@ -79,15 +103,15 @@ const VerifyEmail = () => {
             return;
         }
         try {
-            const response = await axios.get(`${backendUrl}/auth/resend-verification-email`, {
+            const response = await axios.get(`${backendUrl}/auth/send-otp`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success(response.data.message);
             setIsButtonDisabled(true);
-            setTimer(300);
-            localStorage.setItem('resendTimestamp', Date.now().toString());
+            setTimer(600);
+            localStorage.setItem('resendOTPTimestamp', Date.now().toString());
         } catch (error) {
-            toast.error(error.response.data.message || 'Error resending verification email');
+            toast.error(error.response.data.message || 'Error resending OTP');
         }
     };
 
@@ -108,16 +132,24 @@ const VerifyEmail = () => {
     };
 
     return (
-        <div className="verify-email-container">
+        <div className="auth-container">
             <button className="logout-button" onClick={logout}>Logout</button>
-            <h1>Verify Email</h1>
-            <p>Check your email for the verification link.</p>
-            <button className='button-basic' onClick={handleClick} disabled={isButtonDisabled}>
-                {isButtonDisabled ? `Resend Email (${formatTime(timer)})` : 'Resend Email'}
-            </button>
+            <div className="auth-box">
+                <h2>Verify OTP</h2>
+                <form onSubmit={onSubmit}>
+                    <div className="form-group">
+                        <label htmlFor="otp">OTP:</label>
+                        <input type="text" id="otp" value={otp} onChange={e => setOtp(e.target.value)} required />
+                    </div>
+                    <button type="submit">Verify</button>
+                </form>
+                <button className='button-basic' onClick={handleClick} disabled={isButtonDisabled}>
+                    {isButtonDisabled ? `Resend OTP (${formatTime(timer)})` : 'Resend OTP'}
+                </button>
+            </div>
             <ToastContainer />
         </div>
     );
 };
 
-export default VerifyEmail;
+export default VerifyOTP;

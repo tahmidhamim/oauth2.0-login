@@ -7,11 +7,15 @@ const User = require('../models/User');
 const router = express.Router();
 const dotenv = require('dotenv');
 const redis = require('redis');
+const twilio = require('twilio');
 const { sendVerificationEmail, sendResetEmail } = require('../email/sendEmail');
 
 dotenv.config();
 
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+const accountSid = process.env.TWILIO_ACCOUNT_SID; // Twilio Account SID
+const authToken = process.env.TWILIO_AUTH_TOKEN; // Twilio Auth Token
+const client = twilio(accountSid, authToken);
 
 // Create Redis client
 const redisClient = redis.createClient({
@@ -79,7 +83,7 @@ router.post('/login', (req, res, next) => {
         if (!user) return res.status(400).json({ msg: 'Invalid credentials' });
 
         const token = createToken(user, '1d');
-        res.json({ token, msg: 'Login successful' });
+        res.json({ token, is2FAEnabled: user.is2FAEnabled, otpExpires: user.otpExpires, msg: 'Login successful' });
     })(req, res, next);
 });
 
@@ -104,7 +108,7 @@ router.get('/facebook/callback',
     });
 
 // Logout route
-router.post('/logout', (req, res) => {
+router.get('/logout', (req, res) => {
     res.status(200).send('Logged out');
 });
 
@@ -123,7 +127,8 @@ const verifyToken = (req, res, next) => {
     }
 };
 
-router.get('/login-history', verifyToken, async (req, res) => {
+// Get User Profile
+router.get('/profile', verifyToken, async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
         if (!user) {
@@ -132,6 +137,9 @@ router.get('/login-history', verifyToken, async (req, res) => {
         res.json({
             username: user.name,
             isVerified: user.isVerified,
+            phoneNumber: user.phoneNumber,
+            is2FAEnabled: user.is2FAEnabled,
+            otpExpires: user.otpExpires,
             loginHistory: user.loginHistory
         });
     } catch (err) {
@@ -159,12 +167,12 @@ router.post('/exchange-code', async (req, res) => {
         return res.status(400).json({ message: 'Invalid or expired code' });
     }
 
-    const user = { id: parsedData.userId, email: parsedData.email }; // Fetch user data if necessary
+    const user = await User.findById(parsedData.userId);
     const token = createToken(user, '1d');
 
     await redisClient.del(code); // Remove the code once used
 
-    res.json({ token });
+    res.json({ token, is2FAEnabled: user.is2FAEnabled, otpExpires: user.otpExpires });
 });
 
 router.get('/verify-email', async (req, res) => {
@@ -274,6 +282,97 @@ router.post('/reset-password/:token', async (req, res) => {
         await user.save();
 
         res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ msg: 'Server error' });
+    }
+});
+
+// Update User Profile
+router.post('/update-profile', verifyToken, async (req, res) => {
+    const { name, phoneNumber, password, is2FAEnabled } = req.body;
+    try {
+        if (is2FAEnabled && !phoneNumber) {
+            return res.status(400).json({ msg: 'Bad request' });
+        }
+
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        user.name = name || user.name;
+        user.phoneNumber = phoneNumber || user.phoneNumber;
+        if (password) {
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(password, salt);
+        }
+        user.is2FAEnabled = is2FAEnabled;
+
+        await user.save();
+        res.status(200).json({ msg: 'Profile updated' });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ msg: 'Server error' });
+    }
+});
+
+// Send OTP
+router.get('/send-otp', verifyToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        if (!user.is2FAEnabled) {
+            return res.status(400).json({ msg: 'Bad request' });
+        }
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+        user.otp = otp;
+        user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+        await user.save();
+
+        await client.messages.create({
+            body: `Your OTP is ${otp}`,
+            from: process.env.TWILIO_PHONE_NUMBER,
+            to: user.phoneNumber
+        });
+
+        res.status(200).json({ msg: 'OTP sent' });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ msg: 'Server error' });
+    }
+});
+
+// Verify OTP
+router.post('/verify-otp', verifyToken, async (req, res) => {
+    const { otp } = req.body;
+    try {
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        if (!user.is2FAEnabled) {
+            return res.status(400).json({ msg: 'Bad request' });
+        }
+
+        if (user.otp === otp && user.otpExpires > Date.now()) {
+            user.otp = null;
+            user.otpExpires = null;
+            await user.save();
+            res.status(200).json({ msg: 'OTP verified' });
+        } else {
+            res.status(400).json({ msg: 'Invalid or expired OTP' });
+        }
     } catch (error) {
         console.error(error.message);
         res.status(500).json({ msg: 'Server error' });

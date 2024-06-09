@@ -23,7 +23,7 @@ const ForgotPassword = () => {
     return (
         <div className="auth-container">
             <div className="auth-box">
-                <h2>Forgot Password</h2>
+                <h2>Forgot Password?</h2>
                 <form onSubmit={onSubmit}>
                     <div className="form-group">
                         <label htmlFor="email">Email:</label>

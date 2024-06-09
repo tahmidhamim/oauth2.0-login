@@ -17,7 +17,9 @@
 }
 
 .edit-button {
-    margin-left: 84%;
+    position: absolute;
+    top: 20px;
+    right: 130px;
     padding: 8px 18px;
 }
 
